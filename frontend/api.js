@@ -1,10 +1,16 @@
 const DEFAULT_API_BASE = "http://127.0.0.1:8000";
 
 export function getApiBase() {
-  if (window.location.origin.includes("127.0.0.1:8000") || window.location.origin.includes("localhost:8000")) {
+  const customBase = (localStorage.getItem("apiBase") || "").trim();
+  if (customBase) {
+    return customBase.replace(/\/$/, "");
+  }
+
+  if (window.location.origin && window.location.origin.startsWith("http")) {
     return window.location.origin;
   }
-  return localStorage.getItem("apiBase") || DEFAULT_API_BASE;
+
+  return DEFAULT_API_BASE;
 }
 
 export async function apiFetch(path, options = {}) {

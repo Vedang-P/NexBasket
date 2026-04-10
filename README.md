@@ -11,10 +11,14 @@ A full mini-project that demonstrates core DBMS concepts using a realistic e-com
 
 ```text
 project/
+│── api/
+│   └── index.py
 │── backend/
 │   ├── app/
 │   ├── requirements.txt
 │   └── .env.example
+│── scripts/
+│   └── init_db.sh
 │── frontend/
 │── database/
 │   ├── schema.sql
@@ -22,6 +26,8 @@ project/
 │   ├── procedures.sql
 │   ├── triggers.sql
 │   └── SQL_VALIDATION_NOTES.md
+│── requirements.txt
+│── vercel.json
 │── TEST_PLAN.md
 │── DEMO_SCRIPT.md
 │── README.md
@@ -121,6 +127,50 @@ Backend runs at `http://127.0.0.1:8000`.
 - If backend is running, open: `http://127.0.0.1:8000/ui/login.html`
 - You can also open files directly from `frontend/`, but backend API must still be running.
 
+## Vercel Deployment (Production Ready)
+
+This repository is now configured for Vercel deployment using:
+
+- `api/index.py` as the Python serverless function entrypoint.
+- `frontend/**` as static frontend assets.
+- `vercel.json` route mapping from API paths to the Python function.
+
+### 1) Create/Use a PostgreSQL Database
+
+Use a hosted PostgreSQL database (Neon/Supabase/RDS/etc.) and copy its connection string as `DATABASE_URL`.
+
+### 2) Initialize Database on Hosted Postgres
+
+From your terminal:
+
+```bash
+export DATABASE_URL='postgresql://user:pass@host:5432/dbname?sslmode=require'
+./scripts/init_db.sh
+```
+
+### 3) Add Vercel Environment Variable
+
+Set `DATABASE_URL` in your Vercel project (Production and Preview).
+
+### 4) Deploy
+
+```bash
+vercel --prod
+```
+
+### 5) Validate Deployed App
+
+- Homepage: `/` (loads login page)
+- Frontend files are served from `/frontend/*` (e.g. `/frontend/products.html`)
+- API examples:
+  - `GET /health`
+  - `GET /products`
+  - `POST /users/register`
+  - `POST /users/login`
+  - `POST /cart`
+  - `POST /order`
+  - `GET /orders?user_id=...`
+
 ## API Contract Summary
 
 ### `POST /users/register`
@@ -195,7 +245,7 @@ Request:
 ## Troubleshooting
 
 1. **Connection errors**
-- Verify `DATABASE_URL` in `backend/.env`.
+- Verify `DATABASE_URL` in local `.env` or Vercel project env vars.
 - Confirm PostgreSQL service is running.
 
 2. **Order placement fails for stock**

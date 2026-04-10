@@ -1,0 +1,69 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "frontend/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/health",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/users/(register|login)",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/products",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/cart",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/order",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/orders",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/orders/([^/]+)/cancel",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/docs(.*)",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/openapi.json",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/redoc",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/",
+      "status": 308,
+      "headers": {
+        "Location": "/frontend/login.html"
+      }
+    },
+    {
+      "src": "/login",
+      "status": 308,
+      "headers": {
+        "Location": "/frontend/login.html"
+      }
+    }
+  ]
+}
