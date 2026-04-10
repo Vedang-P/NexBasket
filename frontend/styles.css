@@ -21,6 +21,21 @@
   --max: 1200px;
 }
 
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --accent: #6f8cff;
+  --accent-strong: #88a0ff;
+  --accent-soft: rgba(111, 140, 255, 0.2);
+  --bg: #0b1324;
+  --surface: #111c32;
+  --surface-muted: #182541;
+  --line: #2b3c5f;
+  --text: #e7eeff;
+  --text-soft: #a6b5d7;
+  --shadow: 0 16px 34px rgba(3, 9, 20, 0.52);
+  --shadow-soft: 0 10px 24px rgba(3, 9, 20, 0.45);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -41,6 +56,13 @@ body {
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
+}
+
+html[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(110, 139, 255, 0.16), transparent 42%),
+    radial-gradient(circle at 100% 0%, rgba(110, 139, 255, 0.1), transparent 40%),
+    #0a1222;
 }
 
 a {
@@ -174,6 +196,12 @@ a:focus-visible {
   color: var(--text);
 }
 
+html[data-theme="dark"] .btn-ghost {
+  background: #131f37;
+  border-color: #2b3d63;
+  color: #c9d6f6;
+}
+
 .btn-ghost:hover {
   background: var(--surface-muted);
 }
@@ -223,6 +251,11 @@ a:focus-visible {
   box-shadow: var(--shadow);
   border-radius: 999px;
   backdrop-filter: blur(12px);
+}
+
+html[data-theme="dark"] .navbar-shell {
+  background: rgba(12, 20, 36, 0.86);
+  border-color: rgba(53, 72, 108, 0.7);
 }
 
 .navbar-inner {
@@ -296,6 +329,13 @@ a:focus-visible {
   display: grid;
   place-items: center;
   position: relative;
+}
+
+html[data-theme="dark"] .icon-btn,
+html[data-theme="dark"] .avatar-chip {
+  background: #111d34;
+  border-color: #304364;
+  color: #d2def8;
 }
 
 .icon-btn:hover {
@@ -383,6 +423,10 @@ a:focus-visible {
   align-content: start;
 }
 
+html[data-theme="dark"] .drawer-panel {
+  background: #0f1a30;
+}
+
 .drawer-panel a,
 .drawer-panel button {
   width: 100%;
@@ -393,6 +437,24 @@ a:focus-visible {
   background: #121d37;
   color: #d4dbee;
   margin-top: 0;
+}
+
+html[data-theme="dark"] .footer {
+  background: #091222;
+}
+
+.theme-fab {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  z-index: 60;
 }
 
 .footer-inner {
@@ -467,6 +529,10 @@ a:focus-visible {
   background: linear-gradient(145deg, #f2f6ff, #ffffff 45%);
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
+}
+
+html[data-theme="dark"] .hero {
+  background: linear-gradient(145deg, #142544, #0f1a31 45%);
 }
 
 .hero-layout {
@@ -608,6 +674,20 @@ a:focus-visible {
   position: relative;
 }
 
+html[data-theme="dark"] .product-card,
+html[data-theme="dark"] .feature,
+html[data-theme="dark"] .summary-box,
+html[data-theme="dark"] .tab-panel,
+html[data-theme="dark"] .order-card,
+html[data-theme="dark"] .cart-item,
+html[data-theme="dark"] .auth-card,
+html[data-theme="dark"] .thumb,
+html[data-theme="dark"] .empty-state,
+html[data-theme="dark"] .oauth-btn {
+  background: #101b31;
+  border-color: #2a3b5e;
+}
+
 .product-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 16px 30px rgba(20, 31, 61, 0.12);
@@ -620,6 +700,11 @@ a:focus-visible {
   display: grid;
   place-items: center;
   padding: 12px;
+}
+
+html[data-theme="dark"] .product-media,
+html[data-theme="dark"] .gallery-main {
+  background: linear-gradient(160deg, #152641 0%, #101b31 70%);
 }
 
 .product-thumb {
@@ -646,6 +731,11 @@ a:focus-visible {
   background: #eef3ff;
 }
 
+html[data-theme="dark"] .product-image {
+  background: #12213d;
+  border-color: #30466e;
+}
+
 .wish-btn {
   position: absolute;
   right: 10px;
@@ -660,6 +750,12 @@ a:focus-visible {
   display: grid;
   place-items: center;
   transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+html[data-theme="dark"] .wish-btn {
+  background: #14233f;
+  border-color: #334869;
+  color: #9fb3de;
 }
 
 .wish-btn:hover {
@@ -855,8 +951,20 @@ textarea {
   padding: 11px 13px;
 }
 
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  background: #101b31;
+  border-color: #2b3d61;
+  color: #dce7ff;
+}
+
 input::placeholder {
   color: #9ba9c4;
+}
+
+html[data-theme="dark"] input::placeholder {
+  color: #7f94bd;
 }
 
 .eye-btn {

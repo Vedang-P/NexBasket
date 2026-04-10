@@ -1,5 +1,73 @@
 import { apiFetch, clearActiveUser, getActiveUser, getAuthToken } from "./api.js";
 
+const THEME_KEY = "siteThemePreference";
+
+function getSystemTheme() {
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function getStoredTheme() {
+  const stored = localStorage.getItem(THEME_KEY);
+  return stored === "dark" || stored === "light" ? stored : null;
+}
+
+function currentTheme() {
+  return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+}
+
+function updateThemeToggleLabels() {
+  const isDark = currentTheme() === "dark";
+  const iconLabel = isDark ? "☀" : "☾";
+  const textLabel = isDark ? "Light Mode" : "Dark Mode";
+  const nextTitle = isDark ? "Switch to light mode" : "Switch to dark mode";
+  document.querySelectorAll("[data-theme-toggle='true']").forEach((button) => {
+    const iconOnly = button.classList.contains("icon-btn") || button.classList.contains("theme-fab");
+    button.textContent = iconOnly ? iconLabel : textLabel;
+    button.setAttribute("title", nextTitle);
+    button.setAttribute("aria-label", nextTitle);
+  });
+}
+
+function bindThemeToggles(root = document) {
+  root.querySelectorAll("[data-theme-toggle='true']").forEach((button) => {
+    if (button.dataset.themeBound === "true") return;
+    button.dataset.themeBound = "true";
+    button.addEventListener("click", () => {
+      const next = currentTheme() === "dark" ? "light" : "dark";
+      setTheme(next);
+    });
+  });
+}
+
+export function setTheme(theme) {
+  const value = theme === "dark" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", value);
+  localStorage.setItem(THEME_KEY, value);
+  updateThemeToggleLabels();
+}
+
+export function initTheme() {
+  const initial = getStoredTheme() || getSystemTheme();
+  document.documentElement.setAttribute("data-theme", initial);
+  updateThemeToggleLabels();
+}
+
+export function mountFloatingThemeToggle() {
+  if (document.getElementById("themeFabBtn")) {
+    bindThemeToggles(document);
+    updateThemeToggleLabels();
+    return;
+  }
+
+  const button = document.createElement("button");
+  button.id = "themeFabBtn";
+  button.className = "theme-fab";
+  button.setAttribute("data-theme-toggle", "true");
+  document.body.appendChild(button);
+  bindThemeToggles(document);
+  updateThemeToggleLabels();
+}
+
 function userInitial(name = "U") {
   const trimmed = String(name || "").trim();
   return trimmed ? trimmed.charAt(0).toUpperCase() : "U";
@@ -129,6 +197,7 @@ export function renderNavbar(activePage = "home") {
           ${linksHtml}
         </nav>
         <div class="nav-tools">
+          <button class="icon-btn" data-theme-toggle="true" title="Toggle theme" aria-label="Toggle theme"></button>
           <a class="icon-btn search-btn" href="products.html" aria-label="Search products">${icon("search")}</a>
           <a class="icon-btn" href="cart.html" aria-label="Open cart">${icon("cart")}<span class="badge" id="cartCountBadge">0</span></a>
           ${accountChunk}
@@ -141,12 +210,15 @@ export function renderNavbar(activePage = "home") {
       <aside class="drawer-panel">
         <button class="icon-btn" id="closeDrawerBtn" aria-label="Close menu">${icon("close")}</button>
         <div style="margin: 10px 0 8px" class="muted">${user ? `${user.name}${user.is_admin ? " (Admin)" : ""}` : "Guest"}</div>
+        <button class="btn btn-ghost" data-theme-toggle="true">Toggle Theme</button>
         ${renderDrawerLinks(activePage, user)}
         ${user ? `<button class="btn btn-ghost" data-logout="true">Logout</button>` : `<a class="btn btn-primary" href="login.html">Login</a>`}
       </aside>
     </div>
   `;
 
+  bindThemeToggles(root);
+  updateThemeToggleLabels();
   bindDrawer();
   bindLogout();
   updateCartBadge();
@@ -236,3 +308,5 @@ export function showStatus(el, message, type = "success") {
   if (!el) return;
   el.innerHTML = `<div class="status ${type}">${message}</div>`;
 }
+
+initTheme();

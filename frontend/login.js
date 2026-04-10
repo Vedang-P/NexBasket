@@ -1,5 +1,5 @@
 import { apiFetch, getAuthSession, setAuthSession } from "./api.js";
-import { initRevealAnimations, showStatus } from "./ui.js";
+import { initRevealAnimations, mountFloatingThemeToggle, showStatus } from "./ui.js";
 
 const loginForm = document.getElementById("loginForm");
 const loginStatus = document.getElementById("loginStatus");
@@ -8,6 +8,7 @@ const toggleLoginPasswordBtn = document.getElementById("toggleLoginPassword");
 const rememberMe = document.getElementById("rememberMe");
 
 initRevealAnimations();
+mountFloatingThemeToggle();
 
 const existingSession = getAuthSession();
 if (existingSession?.access_token && existingSession?.user?.user_id) {

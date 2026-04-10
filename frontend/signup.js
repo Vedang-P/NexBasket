@@ -1,5 +1,5 @@
 import { apiFetch } from "./api.js";
-import { initRevealAnimations, showStatus } from "./ui.js";
+import { initRevealAnimations, mountFloatingThemeToggle, showStatus } from "./ui.js";
 
 const registerForm = document.getElementById("registerForm");
 const registerStatus = document.getElementById("registerStatus");
@@ -7,6 +7,7 @@ const signupPasswordInput = document.getElementById("regPassword");
 const toggleSignupPasswordBtn = document.getElementById("toggleSignupPassword");
 
 initRevealAnimations();
+mountFloatingThemeToggle();
 
 registerForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
