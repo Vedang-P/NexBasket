@@ -65,6 +65,11 @@ a {
   box-shadow: var(--shadow);
 }
 
+.auth-card {
+  max-width: 460px;
+  margin: 56px auto;
+}
+
 .grid {
   display: grid;
   gap: 16px;

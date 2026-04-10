@@ -1,10 +1,6 @@
-from pathlib import Path
-
 import psycopg
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
-from fastapi.staticfiles import StaticFiles
 
 from .config import API_TITLE
 from .db import get_connection
@@ -36,15 +32,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
-if FRONTEND_DIR.exists():
-    app.mount("/ui", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="ui")
-
-
 @app.get("/")
-def root() -> RedirectResponse | dict[str, str]:
-    if FRONTEND_DIR.exists():
-        return RedirectResponse(url="/ui/login.html")
+def root() -> dict[str, str]:
     return {"message": "Shopping Cart API is running"}
 
 

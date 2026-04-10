@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up | DBMS Cart</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <section class="card auth-card">
+        <h1>Create Account</h1>
+        <p class="muted">Sign up to start adding products to your cart.</p>
+        <form id="registerForm">
+          <label for="regName">Full Name</label>
+          <input id="regName" required />
+          <label for="regEmail">Email</label>
+          <input id="regEmail" type="email" required />
+          <label for="regPassword">Password</label>
+          <input id="regPassword" type="password" required />
+          <label for="regPhone">Phone</label>
+          <input id="regPhone" />
+          <button type="submit">Create Account</button>
+        </form>
+        <div id="registerStatus"></div>
+        <p class="muted" style="margin-top:14px">
+          Already have an account? <a href="login.html">Login</a>
+        </p>
+      </section>
+    </div>
+
+    <script type="module" src="signup.js"></script>
+  </body>
+</html>

@@ -8,37 +8,21 @@
   </head>
   <body>
     <div class="container">
-      <h1>Database-Driven Shopping Cart</h1>
-      <p class="muted">Register a user or login to continue the e-commerce flow.</p>
-      <div class="grid grid-2">
-        <section class="card">
-          <h2>Register</h2>
-          <form id="registerForm">
-            <label for="regName">Name</label>
-            <input id="regName" required />
-            <label for="regEmail">Email</label>
-            <input id="regEmail" type="email" required />
-            <label for="regPassword">Password</label>
-            <input id="regPassword" type="password" required />
-            <label for="regPhone">Phone</label>
-            <input id="regPhone" />
-            <button type="submit">Create Account</button>
-          </form>
-          <div id="registerStatus"></div>
-        </section>
-
-        <section class="card">
-          <h2>Login</h2>
-          <form id="loginForm">
-            <label for="loginEmail">Email</label>
-            <input id="loginEmail" type="email" required />
-            <label for="loginPassword">Password</label>
-            <input id="loginPassword" type="password" required />
-            <button type="submit">Login</button>
-          </form>
-          <div id="loginStatus"></div>
-        </section>
-      </div>
+      <section class="card auth-card">
+        <h1>Welcome Back</h1>
+        <p class="muted">Login to continue to your shopping cart dashboard.</p>
+        <form id="loginForm">
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" required />
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password" required />
+          <button type="submit">Login</button>
+        </form>
+        <div id="loginStatus"></div>
+        <p class="muted" style="margin-top:14px">
+          New here? <a href="signup.html">Create an account</a>
+        </p>
+      </section>
     </div>
 
     <script type="module" src="login.js"></script>
