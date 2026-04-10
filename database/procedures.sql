@@ -14,6 +14,7 @@ LANGUAGE plpgsql
 AS $$
 DECLARE
     v_cart_id BIGINT;
+    v_cart_item_id BIGINT;
     v_existing_qty INTEGER := 0;
     v_stock_qty INTEGER;
 BEGIN
@@ -48,7 +49,7 @@ BEGIN
     RETURNING carts.cart_id INTO v_cart_id;
 
     SELECT ci.cart_item_id, ci.quantity
-    INTO cart_item_id, v_existing_qty
+    INTO v_cart_item_id, v_existing_qty
     FROM cart_items ci
     WHERE ci.cart_id = v_cart_id
       AND ci.product_id = p_product_id;
@@ -60,19 +61,20 @@ BEGIN
             COALESCE(v_existing_qty, 0) + p_qty;
     END IF;
 
-    IF cart_item_id IS NULL THEN
+    IF v_cart_item_id IS NULL THEN
         INSERT INTO cart_items (cart_id, product_id, quantity)
         VALUES (v_cart_id, p_product_id, p_qty)
         RETURNING cart_items.cart_item_id, cart_items.quantity
-        INTO cart_item_id, final_quantity;
+        INTO v_cart_item_id, final_quantity;
     ELSE
         UPDATE cart_items
         SET quantity = quantity + p_qty
-        WHERE cart_items.cart_item_id = add_to_cart.cart_item_id
+        WHERE cart_items.cart_item_id = v_cart_item_id
         RETURNING cart_items.quantity INTO final_quantity;
     END IF;
 
     cart_id := v_cart_id;
+    cart_item_id := v_cart_item_id;
     RETURN NEXT;
 END;
 $$;
