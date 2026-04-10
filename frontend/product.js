@@ -1,4 +1,5 @@
 import { apiFetch, getActiveUser } from "./api.js";
+import { getProductGallery, getProductImage } from "./productMedia.js";
 import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
 
 renderNavbar("products");
@@ -23,15 +24,6 @@ const tabContent = {
   shipping: "Ships in 24-48 hours. Standard delivery in 3-5 business days. Easy cancellation and returns available.",
 };
 
-function initialsFromName(name = "P") {
-  return String(name)
-    .split(" ")
-    .map((part) => part[0] || "")
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
-
 function ratingForProduct(id) {
   return 3.8 + ((id * 37) % 12) / 10;
 }
@@ -53,16 +45,23 @@ function renderSelectorButtons(targetId, items) {
   });
 }
 
-function renderThumbs(productName) {
+function renderThumbs(product) {
   const grid = document.getElementById("thumbGrid");
   if (!grid) return;
-  grid.innerHTML = [1, 2, 3, 4]
-    .map((idx) => `<button class="thumb" data-thumb="${idx}" aria-label="Image ${idx}">${initialsFromName(productName)}${idx}</button>`)
+  const galleryImages = getProductGallery(product.product_id);
+  grid.innerHTML = galleryImages
+    .map(
+      (src, idx) => `
+      <button class="thumb" data-thumb="${src}" aria-label="Image ${idx + 1}">
+        <img class="thumb-image" src="${src}" alt="${product.product_name} thumbnail ${idx + 1}" />
+      </button>
+    `,
+    )
     .join("");
   const mainThumb = document.getElementById("mainThumb");
   grid.querySelectorAll(".thumb").forEach((thumb) => {
     thumb.addEventListener("click", () => {
-      mainThumb.textContent = thumb.textContent;
+      mainThumb.src = thumb.dataset.thumb;
     });
   });
 }
@@ -82,7 +81,7 @@ function renderRelated(products, currentProduct) {
       return `
         <article class="product-card">
           <div class="product-media">
-            <div class="product-thumb">${initialsFromName(product.product_name)}</div>
+            <img class="product-image" src="${getProductImage(product.product_id)}" alt="${product.product_name}" loading="lazy" />
           </div>
           <div class="product-body">
             <strong>${product.product_name}</strong>
@@ -126,9 +125,11 @@ async function initializeProductPage() {
     document.getElementById("productStars").textContent = `${starRow(rating)} ${rating.toFixed(1)}`;
     document.getElementById("productDescription").textContent =
       product.description || "This premium product is crafted for comfort, utility, and timeless styling.";
-    document.getElementById("mainThumb").textContent = initialsFromName(product.product_name);
+    const mainThumb = document.getElementById("mainThumb");
+    mainThumb.src = getProductImage(product.product_id);
+    mainThumb.alt = product.product_name;
 
-    renderThumbs(product.product_name);
+    renderThumbs(product);
     renderSelectorButtons("sizeSelectors", ["S", "M", "L", "XL"]);
     renderSelectorButtons("colorSelectors", ["Midnight", "Ivory", "Olive"]);
     renderTab("description");

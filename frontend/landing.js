@@ -1,4 +1,5 @@
 import { apiFetch, getActiveUser } from "./api.js";
+import { getProductImage } from "./productMedia.js";
 import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
 
 renderNavbar("home");
@@ -9,15 +10,6 @@ const featuredProductsEl = document.getElementById("featuredProducts");
 const categoryChipsEl = document.getElementById("landingCategoryChips");
 const newsletterForm = document.getElementById("newsletterForm");
 const newsletterStatus = document.getElementById("newsletterStatus");
-
-function initialsFromName(name = "P") {
-  return String(name)
-    .split(" ")
-    .map((part) => part[0] || "")
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
 
 function ratingForProduct(productId) {
   return 3.8 + ((productId * 37) % 12) / 10;
@@ -34,7 +26,7 @@ function renderProductCard(product, userLoggedIn) {
     <article class="product-card" data-reveal>
       <div class="product-media">
         <button class="wish-btn" aria-label="Add ${product.product_name} to wishlist">♡</button>
-        <div class="product-thumb">${initialsFromName(product.product_name)}</div>
+        <img class="product-image" src="${getProductImage(product.product_id)}" alt="${product.product_name}" loading="lazy" />
         <button class="btn btn-primary quick-add" data-product-id="${product.product_id}">
           ${userLoggedIn ? "Add to cart" : "Login to add"}
         </button>

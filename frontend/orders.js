@@ -1,4 +1,5 @@
 import { apiFetch, requireActiveUser } from "./api.js";
+import { getProductImage } from "./productMedia.js";
 import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
 
 const user = requireActiveUser();
@@ -16,7 +17,15 @@ function itemRows(items = []) {
     .map(
       (item) => `
         <div class="order-card">
-          <strong>${item.product_name}</strong>
+          <div style="display:flex; gap:10px; align-items:center">
+            <img
+              src="${getProductImage(item.product_id || item.product_name?.length || 1)}"
+              alt="${item.product_name}"
+              loading="lazy"
+              style="width:52px; height:52px; border-radius:10px; border:1px solid var(--line); object-fit:cover"
+            />
+            <strong>${item.product_name}</strong>
+          </div>
           <div class="order-meta">
             <span>Qty: ${item.quantity}</span>
             <span>Unit: ₹${Number(item.unit_price).toFixed(2)}</span>

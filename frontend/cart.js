@@ -1,4 +1,5 @@
 import { apiFetch, requireActiveUser } from "./api.js";
+import { getProductImage } from "./productMedia.js";
 import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
 
 const user = requireActiveUser();
@@ -24,8 +25,19 @@ async function loadCart() {
         (item) => `
         <article class="cart-item">
           <div class="cart-row">
-            <strong>${item.product_name}</strong>
-            <span class="pill">${item.sku}</span>
+            <div style="display:flex; gap:10px; align-items:center; min-width:0">
+              <img
+                src="${getProductImage(item.product_id)}"
+                alt="${item.product_name}"
+                loading="lazy"
+                style="width:58px; height:58px; border-radius:10px; border:1px solid var(--line); object-fit:cover"
+              />
+              <div style="min-width:0">
+                <strong>${item.product_name}</strong>
+                <div class="muted" style="font-size:0.82rem">${item.sku}</div>
+              </div>
+            </div>
+            <span class="pill">In cart</span>
           </div>
           <div class="cart-meta">
             <span>Unit: ₹${Number(item.price).toFixed(2)}</span>

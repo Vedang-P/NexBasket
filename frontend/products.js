@@ -1,4 +1,5 @@
 import { apiFetch, requireActiveUser } from "./api.js";
+import { getProductImage } from "./productMedia.js";
 import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
 
 const user = requireActiveUser();
@@ -24,15 +25,6 @@ let selectedMinRating = null;
 let currentPage = 1;
 const PAGE_SIZE = 9;
 let filteredProducts = [];
-
-function initialsFromName(name = "P") {
-  return String(name)
-    .split(" ")
-    .map((part) => part[0] || "")
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
 
 function ratingForProduct(productId) {
   return 3.8 + ((productId * 37) % 12) / 10;
@@ -93,7 +85,7 @@ function renderPageSlice() {
         <article class="product-card">
           <div class="product-media">
             <button class="wish-btn" aria-label="Wishlist ${product.product_name}">♡</button>
-            <div class="product-thumb">${initialsFromName(product.product_name)}</div>
+            <img class="product-image" src="${getProductImage(product.product_id)}" alt="${product.product_name}" loading="lazy" />
             <button class="btn btn-primary quick-add" data-product-id="${product.product_id}" ${product.stock_qty <= 0 ? "disabled" : ""}>Quick Add</button>
           </div>
           <div class="product-body">
