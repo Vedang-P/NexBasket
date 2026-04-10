@@ -1,4 +1,5 @@
 const DEFAULT_API_BASE = "http://127.0.0.1:8000";
+const VERCEL_BACKEND_PREFIX = "/_/backend";
 
 export function getApiBase() {
   const customBase = (localStorage.getItem("apiBase") || "").trim();
@@ -6,8 +7,16 @@ export function getApiBase() {
     return customBase.replace(/\/$/, "");
   }
 
-  if (window.location.origin && window.location.origin.startsWith("http")) {
+  const host = window.location.hostname || "";
+  const isLocalHost = host === "127.0.0.1" || host === "localhost";
+  const isLocalFastApi = isLocalHost && window.location.port === "8000";
+
+  if (isLocalFastApi) {
     return window.location.origin;
+  }
+
+  if (window.location.origin && window.location.origin.startsWith("http")) {
+    return `${window.location.origin}${VERCEL_BACKEND_PREFIX}`;
   }
 
   return DEFAULT_API_BASE;

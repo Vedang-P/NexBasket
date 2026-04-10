@@ -129,11 +129,12 @@ Backend runs at `http://127.0.0.1:8000`.
 
 ## Vercel Deployment (Production Ready)
 
-This repository is now configured for Vercel deployment using:
+This repository is now configured for Vercel **Services** deployment using:
 
-- `api/index.py` as the Python serverless function entrypoint.
-- `frontend/**` as static frontend assets.
-- `vercel.json` route mapping from API paths to the Python function.
+- `experimentalServices` in `vercel.json`
+- `frontend` service at `/`
+- `backend` FastAPI service at `/_/backend`
+- `api/index.py` as backend service entrypoint
 
 ### 1) Create/Use a PostgreSQL Database
 
@@ -152,7 +153,7 @@ export DATABASE_URL='postgresql://user:pass@host:5432/dbname?sslmode=require'
 
 Set `DATABASE_URL` in your Vercel project (Production and Preview).
 
-### 4) Deploy
+### 4) Deploy (Services Preset)
 
 ```bash
 vercel --prod
@@ -161,15 +162,14 @@ vercel --prod
 ### 5) Validate Deployed App
 
 - Homepage: `/` (loads login page)
-- Frontend files are served from `/frontend/*` (e.g. `/frontend/products.html`)
-- API examples:
-  - `GET /health`
-  - `GET /products`
-  - `POST /users/register`
-  - `POST /users/login`
-  - `POST /cart`
-  - `POST /order`
-  - `GET /orders?user_id=...`
+- Backend API examples:
+  - `GET /_/backend/health`
+  - `GET /_/backend/products`
+  - `POST /_/backend/users/register`
+  - `POST /_/backend/users/login`
+  - `POST /_/backend/cart`
+  - `POST /_/backend/order`
+  - `GET /_/backend/orders?user_id=...`
 
 ## API Contract Summary
 
