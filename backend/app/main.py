@@ -77,7 +77,7 @@ def _resolve_user_id(
 
 @app.get("/")
 def root() -> dict[str, str]:
-    return {"message": "Shopping Cart API is running"}
+    return {"message": "NexBasket API is running"}
 
 
 @app.get("/health")

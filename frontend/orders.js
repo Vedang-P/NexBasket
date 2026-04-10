@@ -1,5 +1,5 @@
 import { apiFetch, requireActiveUser } from "./api.js";
-import { getProductImage } from "./productMedia.js";
+import { bindImageFallbacks, getProductImageSources } from "./productMedia.js";
 import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
 
 const user = requireActiveUser();
@@ -14,14 +14,16 @@ const loadingOrdersEl = document.getElementById("loadingOrders");
 function itemRows(items = []) {
   if (!items.length) return "<p class='muted'>No items found for this order.</p>";
   return items
-    .map(
-      (item) => `
+    .map((item) => {
+      const [primaryImage, fallbackSvg, safePlaceholder] = getProductImageSources(item);
+      return `
         <div class="order-card">
           <div style="display:flex; gap:10px; align-items:center">
             <img
-              src="${getProductImage(item.product_id || item.product_name?.length || 1)}"
+              src="${primaryImage}"
               alt="${item.product_name}"
               loading="lazy"
+              data-fallback-chain="${primaryImage}|${fallbackSvg}|${safePlaceholder}"
               style="width:52px; height:52px; border-radius:10px; border:1px solid var(--line); object-fit:cover"
             />
             <strong>${item.product_name}</strong>
@@ -32,8 +34,8 @@ function itemRows(items = []) {
             <span>Line: ₹${Number(item.line_total).toFixed(2)}</span>
           </div>
         </div>
-      `,
-    )
+      `;
+    })
     .join("");
 }
 
@@ -66,7 +68,7 @@ async function loadOrders() {
               <span>Items: ${order.item_count || (order.items?.length ?? 0)}</span>
             </div>
             <div id="order-details-${order.order_id}" style="display:none; margin-top:10px"></div>
-            <div class="quick-links" style="margin-top:12px">
+            <div class="quick-links order-actions">
               <button class="btn btn-ghost order-details-btn" data-order-id="${order.order_id}">View Details</button>
               ${
                 order.order_status === "PLACED"
@@ -95,6 +97,7 @@ async function loadOrders() {
         await cancelOrder(Number(btn.dataset.orderId));
       });
     });
+    bindImageFallbacks(ordersListEl);
     loadingOrdersEl.style.display = "none";
   } catch (error) {
     loadingOrdersEl.style.display = "none";
@@ -129,6 +132,7 @@ async function toggleOrderDetails(orderId, buttonEl) {
   try {
     const data = await apiFetch(`/orders/${orderId}`);
     detailsEl.innerHTML = itemRows(data.order?.items || []);
+    bindImageFallbacks(detailsEl);
     detailsEl.style.display = "block";
     buttonEl.textContent = "Hide Details";
   } catch (error) {

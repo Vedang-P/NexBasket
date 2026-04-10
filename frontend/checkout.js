@@ -1,5 +1,5 @@
 import { apiFetch, requireActiveUser } from "./api.js";
-import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
+import { initRevealAnimations, refreshCartBadge, renderFooter, renderNavbar, showStatus } from "./ui.js";
 
 const user = requireActiveUser();
 renderNavbar("checkout");
@@ -21,6 +21,7 @@ async function loadSummary() {
     if (!items.length) {
       summaryEl.innerHTML = "<div class='empty-state'>Cart is empty. Add items from the products page first.</div>";
       placeOrderBtn.disabled = true;
+      await refreshCartBadge();
       loadingCheckoutEl.style.display = "none";
       return;
     }
@@ -48,6 +49,7 @@ async function loadSummary() {
       </div>
     `;
     placeOrderBtn.disabled = false;
+    await refreshCartBadge();
     loadingCheckoutEl.style.display = "none";
   } catch (error) {
     loadingCheckoutEl.style.display = "none";
@@ -63,6 +65,7 @@ placeOrderBtn?.addEventListener("click", async () => {
       method: "POST",
       body: JSON.stringify({}),
     });
+    await refreshCartBadge();
     showStatus(statusEl, `Order placed successfully. Order ID: ${result.order_id}`, "success");
     setTimeout(() => {
       window.location.href = "orders.html";

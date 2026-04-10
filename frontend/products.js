@@ -1,6 +1,6 @@
 import { apiFetch, requireActiveUser } from "./api.js";
-import { getProductImage } from "./productMedia.js";
-import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
+import { bindImageFallbacks, getProductImageSources } from "./productMedia.js";
+import { initRevealAnimations, refreshCartBadge, renderFooter, renderNavbar, showStatus } from "./ui.js";
 import { bindWishlistHeartButtons } from "./wishlist.js";
 
 const user = requireActiveUser();
@@ -82,12 +82,19 @@ function renderPageSlice() {
   productsList.innerHTML = pageItems
     .map((product) => {
       const rating = ratingForProduct(product.product_id);
+      const [primaryImage, fallbackSvg, safePlaceholder] = getProductImageSources(product);
       return `
         <article class="product-card">
           <div class="product-media">
             <button class="wish-btn" data-product-id="${product.product_id}" aria-label="Wishlist ${product.product_name}">♡</button>
-            <img class="product-image" src="${getProductImage(product.product_id)}" alt="${product.product_name}" loading="lazy" />
-            <button class="btn btn-primary quick-add" data-product-id="${product.product_id}" ${product.stock_qty <= 0 ? "disabled" : ""}>Quick Add</button>
+            <img
+              class="product-image"
+              src="${primaryImage}"
+              alt="${product.product_name}"
+              loading="lazy"
+              data-fallback-chain="${primaryImage}|${fallbackSvg}|${safePlaceholder}"
+            />
+            <button class="btn btn-primary quick-add" data-action="quick-add" data-product-id="${product.product_id}" ${product.stock_qty <= 0 ? "disabled" : ""}>Quick Add</button>
           </div>
           <div class="product-body">
             <div class="product-row">
@@ -99,7 +106,7 @@ function renderPageSlice() {
               <span class="muted">${rating.toFixed(1)}</span>
             </div>
             <p class="muted">${product.description || "No description available."}</p>
-            <div class="product-row">
+            <div class="product-row card-action-row">
               <strong>₹${Number(product.price).toFixed(2)}</strong>
               <a class="muted" href="product.html?id=${product.product_id}">View details</a>
             </div>
@@ -115,7 +122,9 @@ function renderPageSlice() {
   }
   emptyProducts.style.display = "none";
 
-  productsList.querySelectorAll("button[data-product-id]").forEach((btn) => {
+  bindImageFallbacks(productsList);
+
+  productsList.querySelectorAll("button[data-action='quick-add']").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const productId = Number(btn.dataset.productId);
       try {
@@ -123,6 +132,7 @@ function renderPageSlice() {
           method: "POST",
           body: JSON.stringify({ product_id: productId, quantity: 1 }),
         });
+        await refreshCartBadge();
         showStatus(statusEl, "Item added to cart.", "success");
       } catch (error) {
         showStatus(statusEl, error.message, "error");

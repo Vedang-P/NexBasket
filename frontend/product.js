@@ -1,6 +1,6 @@
 import { apiFetch, getActiveUser } from "./api.js";
-import { getProductGallery, getProductImage } from "./productMedia.js";
-import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
+import { bindImageFallbacks, getProductGallery, getProductImageSources, getSafeProductPlaceholder } from "./productMedia.js";
+import { initRevealAnimations, refreshCartBadge, renderFooter, renderNavbar, showStatus } from "./ui.js";
 import { setWishlistCtaState, toggleWishlist } from "./wishlist.js";
 
 renderNavbar("products");
@@ -49,12 +49,17 @@ function renderSelectorButtons(targetId, items) {
 function renderThumbs(product) {
   const grid = document.getElementById("thumbGrid");
   if (!grid) return;
-  const galleryImages = getProductGallery(product.product_id);
+  const galleryImages = getProductGallery(product);
   grid.innerHTML = galleryImages
     .map(
       (src, idx) => `
       <button class="thumb" data-thumb="${src}" aria-label="Image ${idx + 1}">
-        <img class="thumb-image" src="${src}" alt="${product.product_name} thumbnail ${idx + 1}" />
+        <img
+          class="thumb-image"
+          src="${src}"
+          data-fallback-chain="${src}|assets/products/p${((idx % 6) + 1)}.svg|${getSafeProductPlaceholder()}"
+          alt="${product.product_name} thumbnail ${idx + 1}"
+        />
       </button>
     `,
     )
@@ -79,10 +84,17 @@ function renderRelated(products, currentProduct) {
   relatedProductsEl.innerHTML = related
     .map((product) => {
       const rating = ratingForProduct(product.product_id);
+      const [primaryImage, fallbackSvg, safePlaceholder] = getProductImageSources(product);
       return `
         <article class="product-card">
           <div class="product-media">
-            <img class="product-image" src="${getProductImage(product.product_id)}" alt="${product.product_name}" loading="lazy" />
+            <img
+              class="product-image"
+              src="${primaryImage}"
+              alt="${product.product_name}"
+              loading="lazy"
+              data-fallback-chain="${primaryImage}|${fallbackSvg}|${safePlaceholder}"
+            />
           </div>
           <div class="product-body">
             <strong>${product.product_name}</strong>
@@ -90,9 +102,9 @@ function renderRelated(products, currentProduct) {
               <span class="stars">${starRow(rating)}</span>
               <span class="muted">${rating.toFixed(1)}</span>
             </div>
-            <div class="product-row">
+            <div class="product-row card-action-row">
               <strong>₹${Number(product.price).toFixed(2)}</strong>
-              <a class="muted" href="product.html?id=${product.product_id}">View</a>
+              <a class="muted" href="product.html?id=${product.product_id}">View details</a>
             </div>
           </div>
         </article>
@@ -126,11 +138,14 @@ async function initializeProductPage() {
     document.getElementById("productStars").textContent = `${starRow(rating)} ${rating.toFixed(1)}`;
     document.getElementById("productDescription").textContent =
       product.description || "This premium product is crafted for comfort, utility, and timeless styling.";
+    const [primaryImage, fallbackSvg, safePlaceholder] = getProductImageSources(product);
     const mainThumb = document.getElementById("mainThumb");
-    mainThumb.src = getProductImage(product.product_id);
+    mainThumb.src = primaryImage;
+    mainThumb.dataset.fallbackChain = `${primaryImage}|${fallbackSvg}|${safePlaceholder}`;
     mainThumb.alt = product.product_name;
 
     renderThumbs(product);
+    bindImageFallbacks(document.getElementById("productDetailWrap"));
     renderSelectorButtons("sizeSelectors", ["S", "M", "L", "XL"]);
     renderSelectorButtons("colorSelectors", ["Midnight", "Ivory", "Olive"]);
     renderTab("description");
@@ -161,6 +176,7 @@ async function initializeProductPage() {
             quantity,
           }),
         });
+        await refreshCartBadge();
         showStatus(productStatusEl, "Added to cart successfully.", "success");
       } catch (error) {
         showStatus(productStatusEl, error.message, "error");
@@ -176,6 +192,8 @@ async function initializeProductPage() {
 
     productLoadingEl.style.display = "none";
     productDetailWrapEl.style.display = "block";
+    bindImageFallbacks(productDetailWrapEl);
+    bindImageFallbacks(relatedProductsEl);
     initRevealAnimations();
   } catch (error) {
     productLoadingEl.style.display = "none";

@@ -1,6 +1,6 @@
 import { apiFetch, getActiveUser } from "./api.js";
-import { getProductImage } from "./productMedia.js";
-import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
+import { bindImageFallbacks, getProductImageSources } from "./productMedia.js";
+import { initRevealAnimations, refreshCartBadge, renderFooter, renderNavbar, showStatus } from "./ui.js";
 import { bindWishlistHeartButtons } from "./wishlist.js";
 
 renderNavbar("home");
@@ -23,12 +23,19 @@ function starRow(rating) {
 
 function renderProductCard(product, userLoggedIn) {
   const rating = ratingForProduct(product.product_id);
+  const [primaryImage, fallbackSvg, safePlaceholder] = getProductImageSources(product);
   return `
     <article class="product-card" data-reveal>
       <div class="product-media">
         <button class="wish-btn" data-product-id="${product.product_id}" aria-label="Add ${product.product_name} to wishlist">♡</button>
-        <img class="product-image" src="${getProductImage(product.product_id)}" alt="${product.product_name}" loading="lazy" />
-        <button class="btn btn-primary quick-add" data-product-id="${product.product_id}">
+        <img
+          class="product-image"
+          src="${primaryImage}"
+          alt="${product.product_name}"
+          loading="lazy"
+          data-fallback-chain="${primaryImage}|${fallbackSvg}|${safePlaceholder}"
+        />
+        <button class="btn btn-primary quick-add" data-action="quick-add" data-product-id="${product.product_id}">
           ${userLoggedIn ? "Add to cart" : "Login to add"}
         </button>
       </div>
@@ -41,9 +48,9 @@ function renderProductCard(product, userLoggedIn) {
           <span class="stars" aria-label="${rating.toFixed(1)} stars">${starRow(rating)}</span>
           <span class="muted">${rating.toFixed(1)}</span>
         </div>
-        <div class="product-row">
+        <div class="product-row card-action-row">
           <strong>₹${Number(product.price).toFixed(2)}</strong>
-          <a class="muted" href="product.html?id=${product.product_id}">View</a>
+          <a class="muted" href="product.html?id=${product.product_id}">View details</a>
         </div>
       </div>
     </article>
@@ -66,6 +73,14 @@ async function loadLandingData() {
     const categories = categoriesData?.categories || [];
     const products = (productsData?.products || []).slice(0, 4);
     const user = getActiveUser();
+    const featured = products.length
+      ? products
+      : [
+          { product_name: "Signature Everyday Tote", category_name: "Fashion", price: 1499, product_id: 1 },
+          { product_name: "Smart Desk Lamp", category_name: "Home", price: 2199, product_id: 2 },
+          { product_name: "Wireless Earbuds", category_name: "Electronics", price: 3299, product_id: 3 },
+          { product_name: "Hydration Bottle Pro", category_name: "Sports", price: 999, product_id: 4 },
+        ];
 
     categoryChipsEl.innerHTML = categories
       .map((category, index) => {
@@ -74,14 +89,16 @@ async function loadLandingData() {
       })
       .join("");
 
-    featuredProductsEl.innerHTML = products.map((product) => renderProductCard(product, Boolean(user?.user_id))).join("");
+    featuredProductsEl.innerHTML = featured.map((product) => renderProductCard(product, Boolean(user?.user_id))).join("");
     bindWishlistHeartButtons(featuredProductsEl, {
       onToggle: ({ active }) => {
         showStatus(newsletterStatus, active ? "Added to wishlist." : "Removed from wishlist.", "success");
       },
     });
 
-    featuredProductsEl.querySelectorAll("[data-product-id]").forEach((button) => {
+    bindImageFallbacks(featuredProductsEl);
+
+    featuredProductsEl.querySelectorAll("[data-action='quick-add']").forEach((button) => {
       button.addEventListener("click", async () => {
         const productId = Number(button.dataset.productId);
         if (!user?.user_id) {
@@ -93,6 +110,7 @@ async function loadLandingData() {
             method: "POST",
             body: JSON.stringify({ product_id: productId, quantity: 1 }),
           });
+          await refreshCartBadge();
           showStatus(newsletterStatus, "Added to cart successfully.", "success");
         } catch (error) {
           showStatus(newsletterStatus, error.message, "error");
@@ -102,7 +120,14 @@ async function loadLandingData() {
 
     initRevealAnimations();
   } catch (error) {
-    featuredProductsEl.innerHTML = `<div class="empty-state">Unable to load featured products right now.</div>`;
+    const fallbackCards = [
+      { product_name: "Signature Everyday Tote", category_name: "Fashion", price: 1499, product_id: 1 },
+      { product_name: "Smart Desk Lamp", category_name: "Home", price: 2199, product_id: 2 },
+      { product_name: "Wireless Earbuds", category_name: "Electronics", price: 3299, product_id: 3 },
+      { product_name: "Hydration Bottle Pro", category_name: "Sports", price: 999, product_id: 4 },
+    ];
+    featuredProductsEl.innerHTML = fallbackCards.map((product) => renderProductCard(product, false)).join("");
+    bindImageFallbacks(featuredProductsEl);
     showStatus(newsletterStatus, error.message, "error");
   }
 }

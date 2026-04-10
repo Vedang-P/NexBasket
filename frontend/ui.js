@@ -1,6 +1,7 @@
 import { apiFetch, clearActiveUser, getActiveUser, getAuthToken } from "./api.js";
 
 const THEME_KEY = "siteThemePreference";
+export const APP_NAME = "NexBasket";
 
 function getSystemTheme() {
   return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -103,7 +104,7 @@ function renderDrawerLinks(activePage, user) {
     .join("");
 }
 
-async function updateCartBadge() {
+export async function refreshCartBadge() {
   const cartBadge = document.getElementById("cartCountBadge");
   if (!cartBadge) return;
   if (!getAuthToken()) {
@@ -189,9 +190,9 @@ export function renderNavbar(activePage = "home") {
   root.innerHTML = `
     <div class="navbar-shell">
       <div class="navbar-inner">
-        <a href="index.html" class="brand" aria-label="DBMS Cart home">
-          <span class="brand-badge">DB</span>
-          <span>DBMS Cart</span>
+        <a href="index.html" class="brand" aria-label="${APP_NAME} home">
+          <span class="brand-badge">NB</span>
+          <span>${APP_NAME}</span>
         </a>
         <nav class="nav-links" aria-label="Main navigation">
           ${linksHtml}
@@ -221,7 +222,7 @@ export function renderNavbar(activePage = "home") {
   updateThemeToggleLabels();
   bindDrawer();
   bindLogout();
-  updateCartBadge();
+  refreshCartBadge();
 }
 
 export function renderFooter() {
@@ -233,7 +234,7 @@ export function renderFooter() {
     <div class="footer-inner">
       <div class="footer-grid">
         <section>
-          <h4>DBMS Cart</h4>
+          <h4>${APP_NAME}</h4>
           <p class="muted">Premium storefront experience powered by a transaction-safe PostgreSQL backend.</p>
           <div class="socials" style="margin-top:10px">
             <span>in</span><span>X</span><span>ig</span>
@@ -260,7 +261,7 @@ export function renderFooter() {
         <section>
           <h4>Contact</h4>
           <ul class="footer-list">
-            <li>support@dbmscart.store</li>
+            <li>support@nexbasket.store</li>
             <li>+91 98765 43210</li>
             <li>Mumbai, India</li>
           </ul>
@@ -273,7 +274,7 @@ export function renderFooter() {
         </section>
       </div>
       <div class="footer-bottom">
-        <span>© ${new Date().getFullYear()} DBMS Cart. Crafted for production-grade demos.</span>
+        <span>© ${new Date().getFullYear()} ${APP_NAME}. Crafted for production-grade demos.</span>
         <span class="muted">FastAPI · PostgreSQL · Vercel</span>
       </div>
     </div>

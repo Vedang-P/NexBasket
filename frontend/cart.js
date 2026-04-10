@@ -1,6 +1,6 @@
 import { apiFetch, requireActiveUser } from "./api.js";
-import { getProductImage } from "./productMedia.js";
-import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
+import { bindImageFallbacks, getProductImageSources } from "./productMedia.js";
+import { initRevealAnimations, refreshCartBadge, renderFooter, renderNavbar, showStatus } from "./ui.js";
 
 const user = requireActiveUser();
 renderNavbar("cart");
@@ -21,15 +21,17 @@ async function loadCart() {
     const items = cart.items || [];
 
     cartItemsEl.innerHTML = items
-      .map(
-        (item) => `
+      .map((item) => {
+        const [primaryImage, fallbackSvg, safePlaceholder] = getProductImageSources(item);
+        return `
         <article class="cart-item">
           <div class="cart-row">
             <div style="display:flex; gap:10px; align-items:center; min-width:0">
               <img
-                src="${getProductImage(item.product_id)}"
+                src="${primaryImage}"
                 alt="${item.product_name}"
                 loading="lazy"
+                data-fallback-chain="${primaryImage}|${fallbackSvg}|${safePlaceholder}"
                 style="width:58px; height:58px; border-radius:10px; border:1px solid var(--line); object-fit:cover"
               />
               <div style="min-width:0">
@@ -56,8 +58,8 @@ async function loadCart() {
             </div>
           </div>
         </article>
-      `,
-      )
+      `;
+      })
       .join("");
 
     if (!items.length) {
@@ -65,6 +67,8 @@ async function loadCart() {
     }
 
     totalAmountEl.textContent = `Cart Total: ₹${Number(cart.total_amount || 0).toFixed(2)}`;
+    await refreshCartBadge();
+    bindImageFallbacks(cartItemsEl);
 
     cartItemsEl.querySelectorAll("button[data-action]").forEach((btn) => {
       btn.addEventListener("click", async () => {

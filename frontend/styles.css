@@ -42,6 +42,7 @@ html[data-theme="dark"] {
 
 html {
   scroll-behavior: smooth;
+  height: 100%;
 }
 
 body {
@@ -52,10 +53,11 @@ body {
     radial-gradient(circle at 100% 0%, rgba(47, 93, 255, 0.06), transparent 45%),
     var(--bg);
   color: var(--text);
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 html[data-theme="dark"] body {
@@ -85,6 +87,7 @@ textarea {
 .site-main {
   padding: 32px 16px 56px;
   flex: 1 0 auto;
+  width: 100%;
 }
 
 .container {
@@ -436,7 +439,7 @@ html[data-theme="dark"] .drawer-panel {
 .footer {
   background: #121d37;
   color: #d4dbee;
-  margin-top: 0;
+  margin-top: auto;
 }
 
 html[data-theme="dark"] .footer {
@@ -662,6 +665,7 @@ html[data-theme="dark"] .hero {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
 }
 
 .product-card {
@@ -672,6 +676,9 @@ html[data-theme="dark"] .hero {
   box-shadow: var(--shadow-soft);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 html[data-theme="dark"] .product-card,
@@ -793,8 +800,15 @@ html[data-theme="dark"] .wish-btn {
 
 .product-body {
   padding: 14px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
+  flex: 1 1 auto;
+}
+
+.card-action-row {
+  margin-top: auto;
+  padding-top: 4px;
 }
 
 .product-row {
@@ -1233,6 +1247,12 @@ html[data-theme="dark"] input::placeholder {
   padding: 14px;
 }
 
+.order-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .cart-row,
 .order-row {
   display: flex;
@@ -1299,7 +1319,7 @@ html[data-theme="dark"] input::placeholder {
 .metrics-grid {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   min-width: 0;
 }
 
@@ -1313,8 +1333,12 @@ html[data-theme="dark"] input::placeholder {
 }
 
 .table-wrap {
+  display: block;
+  width: 100%;
   overflow-x: auto;
   max-width: 100%;
+  min-width: 0;
+  -webkit-overflow-scrolling: touch;
 }
 
 .insight-table {
@@ -1339,6 +1363,11 @@ html[data-theme="dark"] input::placeholder {
   align-items: center;
 }
 
+.order-actions {
+  margin-top: auto;
+  padding-top: 4px;
+}
+
 .divider {
   height: 1px;
   background: var(--line);
@@ -1351,6 +1380,7 @@ html[data-theme="dark"] input::placeholder {
   border-radius: 14px;
   text-align: center;
   color: var(--text-soft);
+  width: 100%;
 }
 
 .skeleton {
