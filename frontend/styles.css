@@ -652,6 +652,27 @@ a:focus-visible {
   border-radius: 50%;
   border: 1px solid var(--line);
   background: #fff;
+  color: #6f7ca3;
+  font-size: 1rem;
+  display: grid;
+  place-items: center;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.wish-btn:hover {
+  transform: scale(1.04);
+}
+
+.wish-btn.is-active {
+  background: #ffe9ef;
+  color: #c7395e;
+  border-color: #f3b6c8;
+}
+
+.btn.btn-ghost.is-active {
+  background: #ffe9ef;
+  border-color: #f3b6c8;
+  color: #a72e4d;
 }
 
 .quick-add {

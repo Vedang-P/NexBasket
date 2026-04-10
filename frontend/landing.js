@@ -1,6 +1,7 @@
 import { apiFetch, getActiveUser } from "./api.js";
 import { getProductImage } from "./productMedia.js";
 import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
+import { bindWishlistHeartButtons } from "./wishlist.js";
 
 renderNavbar("home");
 renderFooter();
@@ -25,7 +26,7 @@ function renderProductCard(product, userLoggedIn) {
   return `
     <article class="product-card" data-reveal>
       <div class="product-media">
-        <button class="wish-btn" aria-label="Add ${product.product_name} to wishlist">♡</button>
+        <button class="wish-btn" data-product-id="${product.product_id}" aria-label="Add ${product.product_name} to wishlist">♡</button>
         <img class="product-image" src="${getProductImage(product.product_id)}" alt="${product.product_name}" loading="lazy" />
         <button class="btn btn-primary quick-add" data-product-id="${product.product_id}">
           ${userLoggedIn ? "Add to cart" : "Login to add"}
@@ -74,6 +75,11 @@ async function loadLandingData() {
       .join("");
 
     featuredProductsEl.innerHTML = products.map((product) => renderProductCard(product, Boolean(user?.user_id))).join("");
+    bindWishlistHeartButtons(featuredProductsEl, {
+      onToggle: ({ active }) => {
+        showStatus(newsletterStatus, active ? "Added to wishlist." : "Removed from wishlist.", "success");
+      },
+    });
 
     featuredProductsEl.querySelectorAll("[data-product-id]").forEach((button) => {
       button.addEventListener("click", async () => {

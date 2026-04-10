@@ -1,6 +1,7 @@
 import { apiFetch, requireActiveUser } from "./api.js";
 import { getProductImage } from "./productMedia.js";
 import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
+import { bindWishlistHeartButtons } from "./wishlist.js";
 
 const user = requireActiveUser();
 renderNavbar("products");
@@ -84,7 +85,7 @@ function renderPageSlice() {
       return `
         <article class="product-card">
           <div class="product-media">
-            <button class="wish-btn" aria-label="Wishlist ${product.product_name}">♡</button>
+            <button class="wish-btn" data-product-id="${product.product_id}" aria-label="Wishlist ${product.product_name}">♡</button>
             <img class="product-image" src="${getProductImage(product.product_id)}" alt="${product.product_name}" loading="lazy" />
             <button class="btn btn-primary quick-add" data-product-id="${product.product_id}" ${product.stock_qty <= 0 ? "disabled" : ""}>Quick Add</button>
           </div>
@@ -127,6 +128,12 @@ function renderPageSlice() {
         showStatus(statusEl, error.message, "error");
       }
     });
+  });
+
+  bindWishlistHeartButtons(productsList, {
+    onToggle: ({ active }) => {
+      showStatus(statusEl, active ? "Added to wishlist." : "Removed from wishlist.", "success");
+    },
   });
 }
 

@@ -1,6 +1,7 @@
 import { apiFetch, getActiveUser } from "./api.js";
 import { getProductGallery, getProductImage } from "./productMedia.js";
 import { initRevealAnimations, renderFooter, renderNavbar, showStatus } from "./ui.js";
+import { setWishlistCtaState, toggleWishlist } from "./wishlist.js";
 
 renderNavbar("products");
 renderFooter();
@@ -166,8 +167,11 @@ async function initializeProductPage() {
       }
     });
 
+    setWishlistCtaState(wishlistBtn, product.product_id);
     wishlistBtn.addEventListener("click", () => {
-      showStatus(productStatusEl, "Wishlist is visual-only for this demo build.", "success");
+      const result = toggleWishlist(product.product_id);
+      setWishlistCtaState(wishlistBtn, product.product_id);
+      showStatus(productStatusEl, result.active ? "Added to wishlist." : "Removed from wishlist.", "success");
     });
 
     productLoadingEl.style.display = "none";
