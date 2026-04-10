@@ -25,19 +25,16 @@ function renderProductCard(product, userLoggedIn) {
   const rating = ratingForProduct(product.product_id);
   const [primaryImage, fallbackSvg, safePlaceholder] = getProductImageSources(product);
   return `
-    <article class="product-card" data-reveal>
+    <article class="product-card featured-product-card" data-reveal>
       <div class="product-media">
         <button class="wish-btn" data-product-id="${product.product_id}" aria-label="Add ${product.product_name} to wishlist">♡</button>
         <img
-          class="product-image"
+          class="product-image featured-product-image"
           src="${primaryImage}"
           alt="${product.product_name}"
           loading="lazy"
           data-fallback-chain="${primaryImage}|${fallbackSvg}|${safePlaceholder}"
         />
-        <button class="btn btn-primary quick-add" data-action="quick-add" data-product-id="${product.product_id}">
-          ${userLoggedIn ? "Add to cart" : "Login to add"}
-        </button>
       </div>
       <div class="product-body">
         <div class="product-row">
@@ -50,6 +47,11 @@ function renderProductCard(product, userLoggedIn) {
         </div>
         <div class="product-row card-action-row">
           <strong>₹${Number(product.price).toFixed(2)}</strong>
+        </div>
+        <div class="product-row featured-actions">
+          <button class="btn btn-primary" data-action="quick-add" data-product-id="${product.product_id}">
+            ${userLoggedIn ? "Add to cart" : "Login to add"}
+          </button>
           <a class="btn btn-ghost card-details-btn" href="product.html?id=${product.product_id}">More Details</a>
         </div>
       </div>

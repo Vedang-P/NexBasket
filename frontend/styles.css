@@ -855,6 +855,28 @@ html[data-theme="dark"] .btn.btn-ghost.is-active {
   font-size: 0.8rem;
 }
 
+.featured-product-card .product-media {
+  height: 210px;
+  padding: 16px;
+}
+
+.featured-product-image {
+  object-fit: contain;
+  object-position: center;
+  padding: 6px;
+}
+
+.featured-actions {
+  margin-top: 8px;
+  gap: 8px;
+}
+
+.featured-actions .btn {
+  min-height: 34px;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+}
+
 .product-row {
   display: flex;
   justify-content: space-between;
