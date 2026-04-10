@@ -50,7 +50,7 @@ function renderProductCard(product, userLoggedIn) {
         </div>
         <div class="product-row card-action-row">
           <strong>₹${Number(product.price).toFixed(2)}</strong>
-          <a class="muted" href="product.html?id=${product.product_id}">View details</a>
+          <a class="btn btn-ghost card-details-btn" href="product.html?id=${product.product_id}">More Details</a>
         </div>
       </div>
     </article>

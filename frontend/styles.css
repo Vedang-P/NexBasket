@@ -850,6 +850,11 @@ html[data-theme="dark"] .btn.btn-ghost.is-active {
   padding-top: 4px;
 }
 
+.card-details-btn {
+  padding: 7px 12px;
+  font-size: 0.8rem;
+}
+
 .product-row {
   display: flex;
   justify-content: space-between;
